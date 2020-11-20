@@ -1,4 +1,6 @@
 #!/usr/bin/bash
+mv ${HOME}/.tmux.conf ${HOME}/.tmux.conf.bak
+cp .tmux.conf ${HOME}/.tmux.conf
 cd $HOME
 mkdir local
 conda install -y -p local -c conda-forge tmux
