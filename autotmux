@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+cd $HOME
+mkdir local
+conda install -y -p local -c conda-forge tmux
+echo 'export PATH="${HOME}/local/bin:$PATH"' >> .bashrc
+echo '
+if [ -z $TMUX ];then
+                                if [[ $(tmux ls|wc -l) > $(tmux ls|grep -c attached) ]];
+                                then
+                                                                tmux attach
+                                else
+                                                                tmux
+                                fi
+fi' >> .bashrc
