@@ -14,3 +14,4 @@ if [ -z $TMUX ];then
                                                                 tmux
                                 fi
 fi' >> .bashrc
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
