@@ -2,10 +2,14 @@
 mv ${HOME}/.tmux.conf ${HOME}/.tmux.conf.bak
 cp .tmux.conf ${HOME}/.tmux.conf
 cd $HOME
-mkdir local
+mkdir -p local/.resurrect
 conda install -y -p local -c conda-forge tmux
-echo 'export PATH="${HOME}/local/bin:$PATH"' >> .bashrc
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
 echo '
+## new tmux
+export PATH="${HOME}/local/bin:$PATH"
+## autostart tmux
 if [ -z $TMUX ];then
                                 if [[ $(tmux ls|wc -l) > $(tmux ls|grep -c attached) ]];
                                 then
@@ -14,4 +18,20 @@ if [ -z $TMUX ];then
                                                                 tmux
                                 fi
 fi' >> .bashrc
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+echo '
+## auto connect to compute node
+if [[ $HOSTNAME == '' ]];then
+allocated=$(saccat ｜ grep TODO)
+if [[ -n $allocated ]];then
+  available=$(sinfo ｜ grep TODO)
+  salloc $availabe TODO
+fi
+if [[ -n $allocated ]];then
+  ssh lutan@$allocated
+else
+  echo -e "\033[31m warning: fail to restore ssh connection \033[0m"
+fi
+'
+
+
