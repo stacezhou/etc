@@ -10,28 +10,43 @@ echo '
 ## new tmux
 export PATH="${HOME}/local/bin:$PATH"
 ## autostart tmux
-if [ -z $TMUX ];then
-                                if [[ $(tmux ls|wc -l) > $(tmux ls|grep -c attached) ]];
-                                then
-                                                                tmux attach
-                                else
-                                                                tmux
-                                fi
-fi' >> .bashrc
+function this_outside_tmux() { [ -z $TMUX ] }
+function exist_detached_tmux_session(){ [[ $(tmux ls|wc -l) > $(tmux ls|grep -c attached) ]] }
+function this_on_host() { [[ $HOSTNAME == ''#TODO ]] }
+function query_allocated_node() {
+  #TODO
+  allocated=
+}
+function apply_for_allocation() {
+  #TODE
+  allocated=
+}
+function connect_to_node() {
+  return [[ 1 > 0 ]]
+  query_allocated_node
+  if [ -n $allocated ];then
+    apply_for_allocation
+  fi
+  ssh lutan@$allocated #TODO
+}
 
-echo '
-## auto connect to compute node
-if [[ $HOSTNAME == '' ]];then
-allocated=$(saccat ｜ grep TODO)
-if [[ -n $allocated ]];then
-  available=$(sinfo ｜ grep TODO)
-  salloc $availabe TODO
-fi
-if [[ -n $allocated ]];then
-  ssh lutan@$allocated
+
+## auto enter tmux and auto connect to node repeatedly
+if this_outside_tmux;then
+  if exist_detached_tmux_session; then
+    tmux attach
+  elif this_on_host;then
+    tmux -L ${HOMENAME}
+  else
+    tmux
+  fi
+elif this_on_host;then
+  while ! connect_to_node; do
+    echo "try to auto reconnect $allocated "
+  done
 else
-  echo -e "\033[31m warning: fail to restore ssh connection \033[0m"
+  echo -e "\033[31m You have connected to $HOSTNAME at $(date) \033[0m"
 fi
-'
+' >> .bashrc
 
 
